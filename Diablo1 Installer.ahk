@@ -75,7 +75,6 @@ D1Classic()
       FileCopy, %Path%, diablo\DIABDAT.MPQ
     else
     {
-     ;DownloadD1() ; -Disabled
      MsgBox % "Diablo is not installed on your system. You can Buy it from https://us.shop.battle.net/en-us/product/diablo or https://www.gog.com/en/game/diablo"
     }
 
@@ -119,7 +118,6 @@ D1devilutionx()
       FileCopy, %Path%, diablo\DIABDAT.MPQ
     else
     {
-     ;DownloadD1() ; -Disabled
      MsgBox % "Diablo is not installed on your system. You can Buy it from https://us.shop.battle.net/en-us/product/diablo or https://www.gog.com/en/game/diablo"
     }
     Sleep, 100
@@ -143,9 +141,7 @@ DownloadD1()
   totalFileSize := 517501282
   FileSize := Round(totalFileSize/1000000)
 
-	;msg := "Please wait while download is in progress"
         GuiControl,, TopText, Please wait while download is in progress
-	;Progress, 0 M FM10 FS8 WM400 WS400 ,`n,%msg%, Downloading - DIABDAT Datafile, Tahoma
 	SetTimer, uProgress, 250
 	UrlDownloadToFile % "http://www.xatmo.us/diablompq/DIABDAT.MPQ", % A_WorkingDir . "\diablo\DIABDAT.MPQ"
 	SetTimer, uProgress, off
@@ -158,8 +154,7 @@ DownloadD1()
              }
             else
                Return
- 
-        
+    
    uProgress:
 	 FileGetSize, fs, %A_WorkingDir%\diablo\DIABDAT.MPQ
 	 a := Floor(fs/totalFileSize * 100)
@@ -168,7 +163,6 @@ DownloadD1()
 	 b += 0
          f := Round(fs/1000000)
          GuiControl,, DownloadBar, %b%
-	 ;Progress, %a%, %b%`% done (%f% MB of %FileSize% MB)
          GuiControl,, BottomText, %b%`% done (%f% MB of %FileSize% MB)
          Return
 }
@@ -187,26 +181,15 @@ DownloadTheHell(Name, DL)
      GuiControl, Show, BottomText
      GuiControl, Show, DownloadBar
 
-     totalFileSize := 452820047
+     totalFileSize := GetSizeBytes()
      FileSize := Round(totalFileSize/1000000)
 
-	;msg := "Please wait while download is in progress"
         GuiControl,, TopText, Please wait while download is in progress
-	;Progress, 0 M FM10 FS8 WM400 WS400 ,`n,%msg%, Downloading - %Name%.7z, Tahoma
 	SetTimer, uProgress1, 250
 	UrlDownloadToFile % DL, % A_WorkingDir . "\TheHell3\TH3.7z"
 	SetTimer, uProgress1, off
 	Progress, Off
-
-        MsgBox, 4,,Finished!! Create Desktop Shortcut?
-           IfMsgBox Yes
-            {
-             FileCreateShortcut, %A_WorkingDir%\TheHell3\TH3.exe, %A_Desktop%\The Hell 3.lnk,,, The Hell 3, %A_WorkingDir%\TheHell3\TH3.exe
-             Return
-            }
-           else
-              Return
-       
+ 
    uProgress1:
 	 FileGetSize, fs, % A_WorkingDir . "\TheHell3\TH3.7z"
 	 a := Floor(fs/totalFileSize * 100)
@@ -215,7 +198,6 @@ DownloadTheHell(Name, DL)
 	 b += 0
          f := Round(fs/1000000)
          GuiControl,, DownloadBar, %b%
-	 ;Progress, %a%, %b%`% done (%f% MB of %FileSize% MB)
          GuiControl,, BottomText, %b%`% done (%f% MB of %FileSize% MB)
          Return
 }
@@ -249,15 +231,35 @@ GetDownloadLink()
  }
 }
 
+GetSizeBytes()
+{
+ ModdbLink := "https://www.moddb.com/mods/diablo-the-hell-3/downloads/th3"
+ Text := Connect(ModdbLink, Method := "GET", PostData)
+ Loop, parse, Text, `n, `r
+ {
+  If InStr(A_LoopField, "bytes")
+  {
+     Strip := StrSplit(Formatted := SubStr(A_LoopField, 18, (Str := StrLen(A_LoopField) -37)), ",") 
+     Formatted := Strip[1] . Strip[2] . Strip[3]
+     return Formatted
+  }
+ }
+}
+
 Extract(FileName)
 {
  SetWorkingDir % A_WorkingDir . "\TheHell3"
- ;msg := "Please wait while Extraction is in progress"
  GuiControl,, TopText,Please wait while Extraction is in progress
- ;Progress,M FM10 FS8 WM400 WS400 ,`n,%msg%, Extracting - %FileName%, Tahoma
- ;Progress, 100
  RunWait %comspec% /c "7za x %FileName% -aoa *.* -r",, HIDE
  Progress, Off
+ MsgBox, 4,,Finished!! Create Desktop Shortcut?
+    IfMsgBox Yes
+      {
+       FileCreateShortcut, %A_WorkingDir%\TH3.exe, %A_Desktop%\The Hell 3.lnk,,, The Hell 3, %A_WorkingDir%\TH3.exe
+       Return
+      }
+       else
+          Return
 }
 
 Install7z()
@@ -304,15 +306,6 @@ ExtractEmbeds()
  FileInstall, diablo\SMACKW32.DLL, %A_WorkingDir%\diablo\SMACKW32.DLL, 1
  FileInstall, diablo\Storm.dll, %A_WorkingDir%\diablo\Storm.dll, 1
  FileInstall, diablo\wsock32.dll, %A_WorkingDir%\diablo\wsock32.dll, 1
-}
-
-ExtractEmbedsTheHell()
-{
- ;FileInstall, diabloTheHell3\config.ini, %A_WorkingDir%\diabloTheHell3\config.ini, 1
- ;FileInstall, diabloTheHell3\SmackW32.DLL, %A_WorkingDir%\diabloTheHell3\SmackW32.DLL, 1
- ;FileInstall, diabloTheHell3\Standard.sn2, %A_WorkingDir%\diabloTheHell3\Standard.sn2, 1
- ;FileInstall, diabloTheHell3\Strm2.dll, %A_WorkingDir%\diabloTheHell3\Strm2.dll, 1
- ;FileInstall, diabloTheHell3\TH3.exe, %A_WorkingDir%\diabloTheHell3\TH3.exe, 1
 }
 
 ExtractEmbedsdevilutionx()
