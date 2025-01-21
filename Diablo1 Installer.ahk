@@ -1,3 +1,4 @@
+#Include cJson.ahk
 #NoTrayIcon
 SetBatchLines,-1
 SetWinDelay,0
@@ -9,11 +10,11 @@ Gui, Menu, MainTheMenu
 
 IfNotExist, %A_WorkingDir%\Diablo.jpg
   FileInstall, Diablo.jpg, %A_WorkingDir%\Diablo.jpg, 1
-Name := GetFileName()
+Name := GetFileName(), DevxName := GetDevXVersion()
 Gui, Add, Picture, x2 y-51 w290 h410 , Diablo.jpg
 Gui, Add, Button, gD1Classic x72 y109 w140 h30 , Diablo 1: Classic
 Gui, Add, Button, gD1TheHell x72 y149 w140 h30 , The Hell 3: %Name%
-Gui, Add, Button, gD1devilutionx x72 y189 w140 h30 , Devilutionx: 1.5.3
+Gui, Add, Button, gD1devilutionx x72 y189 w140 h30 , Devilutionx: %DevxName%
 Gui, Add, Text,cRed vTopText x50 y235 w200 h30 +BackgroundTrans, 
 Gui, Add, Progress, x45 y250 w200 h25 cRed vDownloadBar, 0
 Gui, Add, Text,cBlack vBottomText x60 y255 w200 h30 +BackgroundTrans,
@@ -110,6 +111,7 @@ D1devilutionx()
  IfMsgBox Yes
   {
     FileCreateDir, diablo
+    Install7zDevX()
     Sleep, 100
     Path := FindLocation()
     if Path != 0
@@ -120,7 +122,10 @@ D1devilutionx()
     Sleep, 100
     ExtractEmbeds()
     Sleep, 100
-    ExtractEmbedsdevilutionx()
+    DL := GetDevXDownloadLink()
+    DownloadDevX(Name, DL)
+    ExtractDevX("devilutionx-windows-x86_64.zip")
+    CleanUpDevx()
 
     MsgBox % "Complete"
   }
@@ -197,6 +202,78 @@ DownloadTheHell(Name, DL)
          Return
 }
 
+DownloadDevX(Name, DL)
+{
+   Path := FindLocation()
+   if Path != 0
+     FileCopy, %Path%, diablo\DIABDAT.MPQ
+   else
+    {
+     MsgBox % "DIABDAT.MPQ Not found in common install locations!"
+     ExitApp
+    }
+     GuiControl, Show, TopText
+     GuiControl, Show, BottomText
+     GuiControl, Show, DownloadBar
+
+     totalFileSize := GetDevXSize()
+     FileSize := Round(totalFileSize/1000000)
+
+        GuiControl,, TopText, Please wait while download is in progress
+	SetTimer, uProgress2, 250
+	UrlDownloadToFile % DL, % A_WorkingDir . "\diablo\devilutionx-windows-x86_64.zip"
+	SetTimer, uProgress2, off
+ 
+   uProgress2:
+	 FileGetSize, fs, % A_WorkingDir . "\diablo\devilutionx-windows-x86_64.zip"
+	 a := Floor(fs/totalFileSize * 100)
+	 b := Floor(fs/totalFileSize * 10000)/100
+	 SetFormat, float, 0.2
+	 b += 0
+         f := Round(fs/1000000)
+         GuiControl,, DownloadBar, %b%
+         GuiControl,, BottomText, %b%`% done (%f% MB of %FileSize% MB)
+         Return
+}
+
+GetDevXDownloadLink()
+{
+ URL := "https://api.github.com/repos/diasurgical/devilutionX/releases?page=1"
+ Data := Connect(URL, Method := "GET", PostData)
+ obj := cJson.Loads(Data)
+ Data := obj
+ Tag := Data[1].name
+ Source := "https://github.com/diasurgical/devilutionX/releases/download/" . Tag . "/devilutionx-windows-x86_64.zip"
+return Source
+}
+
+
+GetDevXVersion()
+{
+ URL := "https://api.github.com/repos/diasurgical/devilutionX/releases?page=1"
+ Data := Connect(URL, Method := "GET", PostData)
+ obj := cJson.Loads(Data)
+ Data := obj
+ Tag := Data[1].name
+return Tag
+}
+
+GetDevXSize()
+{
+ URL := "https://api.github.com/repos/diasurgical/devilutionX/releases?page=1"
+ Data := Connect(URL, Method := "GET", PostData)
+ obj := cJson.Loads(Data)
+ Data := obj
+ for k,v in Data[1].assets
+     {
+      I++
+      AssName := Data[1].assets[I].name
+      If AssName = devilutionx-windows-x86_64.zip
+         Size := Data[1].assets[I].size
+      }
+return Size
+}
+
 GetFileName()
 {
  ModdbLink := "https://www.moddb.com/mods/diablo-the-hell-3/downloads/th3"
@@ -256,6 +333,23 @@ Extract(FileName)
           Return
 }
 
+ExtractDevX(FileName)
+{
+ SetWorkingDir % A_WorkingDir . "\diablo"
+ GuiControl,, TopText,Please wait while Extraction is in progress
+ RunWait %comspec% /c "7za x %FileName% -aoa *.* -r",, HIDE
+ FileMove, % A_WorkingDir . "\devilutionx", % A_WorkingDir
+ FileRemoveDir, % A_WorkingDir . "\devilutionx"
+ MsgBox, 4,,Finished!! Create Desktop Shortcut?
+    IfMsgBox Yes
+      {
+       FileCreateShortcut, %A_WorkingDir%\devilutionx.exe, %A_Desktop%\devilutionx.exe.lnk,,, devilutionx, %A_WorkingDir%\devilutionx.exe
+       Return
+      }
+       else
+          Return
+}
+
 Install7z()
 {
 if !FileExist(7za.exe)
@@ -266,6 +360,15 @@ if !FileExist(7za.exe)
     }
 }
 
+Install7zDevX()
+{
+if !FileExist(7za.exe)
+    {
+     FileInstall, 7za.exe, 7za.exe
+     FileCopy, 7za.exe, diablo\7za.exe
+    }
+}
+
 CleanUp()
 {
  GuiControl,, TopText, Cleanup in progress
@@ -273,6 +376,18 @@ CleanUp()
  FileDelete, 7za.exe
  GuiControl,, BottomText, Deleteing- TH3.7z
  FileDelete, TH3.7z
+ SetWorkingDir % A_ScriptDir
+ GuiControl,, TopText, 
+ GuiControl,, BottomText, (Installation Complete!!)
+}
+
+CleanUpDevx()
+{
+ GuiControl,, TopText, Cleanup in progress
+ GuiControl,, BottomText, Deleteing- 7za.exe
+ FileDelete, 7za.exe
+ GuiControl,, BottomText, Deleteing- devilutionx-windows-x86_64.zip
+ FileDelete, devilutionx-windows-x86_64.zip
  SetWorkingDir % A_ScriptDir
  GuiControl,, TopText, 
  GuiControl,, BottomText, (Installation Complete!!)
@@ -300,15 +415,6 @@ ExtractEmbeds()
  FileInstall, diablo\SMACKW32.DLL, %A_WorkingDir%\diablo\SMACKW32.DLL, 1
  FileInstall, diablo\Storm.dll, %A_WorkingDir%\diablo\Storm.dll, 1
  FileInstall, diablo\wsock32.dll, %A_WorkingDir%\diablo\wsock32.dll, 1
-}
-
-ExtractEmbedsdevilutionx()
-{
- FileInstall, devilutionx\devilutionx.exe, %A_WorkingDir%\diablo\devilutionx.exe, 1
- FileInstall, devilutionx\devilutionx.mpq, %A_WorkingDir%\diablo\devilutionx.mpq, 1
- FileInstall, devilutionx\discord_game_sdk.dll, %A_WorkingDir%\diablo\discord_game_sdk.dll, 1
- FileInstall, devilutionx\libsodium-23.dll, %A_WorkingDir%\diablo\libsodium-23.dll, 1
- FileInstall, devilutionx\SDL2.dll, %A_WorkingDir%\diablo\SDL2.dll, 1
 }
 
 CheckInstall()
