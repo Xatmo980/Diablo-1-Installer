@@ -1,4 +1,4 @@
- #NoTrayIcon
+#NoTrayIcon
 SetBatchLines,-1
 SetWinDelay,0
 
@@ -24,31 +24,31 @@ return
 
 Mordor()
 {
-Gui, Mor:Add, GroupBox, x2 y-1 w280 h80
-Gui, Mor:Add, Picture, x2 y-30 w299 h250 , Diablo.jpg
-Gui, Mor:Add, Link, x30 y19 w240 h20, <a href="https://www.moddb.com/mods/diablo-the-hell-3">https://www.moddb.com/mods/diablo-the-hell-3</a>
-Gui, Mor:Add, Link, x54 y49 w180 h20, <a href="https://discord.gg/9kN7HMPgUY">https://discord.gg/9kN7HMPgUY</a>
-Gui, Mor:Show, w299 h92,By Mordor_XP
+ Gui, Mor:Add, GroupBox, x2 y-1 w280 h80
+ Gui, Mor:Add, Picture, x2 y-30 w299 h250 , Diablo.jpg
+ Gui, Mor:Add, Link, x30 y19 w240 h20, <a href="https://www.moddb.com/mods/diablo-the-hell-3">https://www.moddb.com/mods/diablo-the-hell-3</a>
+ Gui, Mor:Add, Link, x54 y49 w180 h20, <a href="https://discord.gg/9kN7HMPgUY">https://discord.gg/9kN7HMPgUY</a>
+ Gui, Mor:Show, w299 h92,By Mordor_XP
 return
 }
 
 Devilution()
 {
-Gui, Dev:Add, GroupBox, x2 y-1 w280 h80
-Gui, Dev:Add, Picture, x2 y-30 w299 h250 , Diablo.jpg
-Gui, Dev:Add, Link, x43 y19 w210 h20, <a href="https://github.com/diasurgical/devilutionX">https://github.com/diasurgical/devilutionX</a>
-Gui, Dev:Add, Link, x54 y49 w190 h20, <a href="https://discord.com/invite/devilutionx">https://discord.com/invite/devilutionx</a>
-Gui, Dev:Show, w299 h92,by Devilutionx
+ Gui, Dev:Add, GroupBox, x2 y-1 w280 h80
+ Gui, Dev:Add, Picture, x2 y-30 w299 h250 , Diablo.jpg
+ Gui, Dev:Add, Link, x43 y19 w210 h20, <a href="https://github.com/diasurgical/devilutionX">https://github.com/diasurgical/devilutionX</a>
+ Gui, Dev:Add, Link, x54 y49 w190 h20, <a href="https://discord.com/invite/devilutionx">https://discord.com/invite/devilutionx</a>
+ Gui, Dev:Show, w299 h92,by Devilutionx
 return
 }
 
 Bliz()
 {
-Gui, Blizz:Add, GroupBox, x2 y-1 w280 h80
-Gui, Blizz:Add, Picture, x2 y-30 w299 h250 , Diablo.jpg
-Gui, Blizz:Add, Link, x39 y19 w230 h20, <a href="https://us.shop.battle.net/en-us/product/diablo">https://us.shop.battle.net/en-us/product/diablo</a>
-Gui, Blizz:Add, Link, x61 y49 w160 h20, <a href="https://www.blizzard.com/en-us">https://www.blizzard.com/en-us</a>
-Gui, Blizz:Show, w299 h92,by Blizzard Entertainment
+ Gui, Blizz:Add, GroupBox, x2 y-1 w280 h80
+ Gui, Blizz:Add, Picture, x2 y-30 w299 h250 , Diablo.jpg
+ Gui, Blizz:Add, Link, x39 y19 w230 h20, <a href="https://us.shop.battle.net/en-us/product/diablo">https://us.shop.battle.net/en-us/product/diablo</a>
+ Gui, Blizz:Add, Link, x61 y49 w160 h20, <a href="https://www.blizzard.com/en-us">https://www.blizzard.com/en-us</a>
+ Gui, Blizz:Show, w299 h92,by Blizzard Entertainment
 return
 }
 
@@ -74,9 +74,7 @@ D1Classic()
     if Path != 0
       FileCopy, %Path%, diablo\DIABDAT.MPQ
     else
-    {
-     MsgBox % "Diablo is not installed on your system. You can Buy it from https://us.shop.battle.net/en-us/product/diablo or https://www.gog.com/en/game/diablo"
-    }
+      MsgBox % "Diablo is not installed on your system. You can Buy it from https://us.shop.battle.net/en-us/product/diablo or https://www.gog.com/en/game/diablo"
 
     MsgBox % "Complete"
    }
@@ -117,9 +115,8 @@ D1devilutionx()
     if Path != 0
       FileCopy, %Path%, diablo\DIABDAT.MPQ
     else
-    {
-     MsgBox % "Diablo is not installed on your system. You can Buy it from https://us.shop.battle.net/en-us/product/diablo or https://www.gog.com/en/game/diablo"
-    }
+      MsgBox % "Diablo is not installed on your system. You can Buy it from https://us.shop.battle.net/en-us/product/diablo or https://www.gog.com/en/game/diablo"
+
     Sleep, 100
     ExtractEmbeds()
     Sleep, 100
@@ -145,7 +142,6 @@ DownloadD1()
 	SetTimer, uProgress, 250
 	UrlDownloadToFile % "http://www.xatmo.us/diablompq/DIABDAT.MPQ", % A_WorkingDir . "\diablo\DIABDAT.MPQ"
 	SetTimer, uProgress, off
-	Progress, Off
          MsgBox, 4,,Finished!! Create Desktop Shortcut?
             IfMsgBox Yes
              {
@@ -188,7 +184,6 @@ DownloadTheHell(Name, DL)
 	SetTimer, uProgress1, 250
 	UrlDownloadToFile % DL, % A_WorkingDir . "\TheHell3\TH3.7z"
 	SetTimer, uProgress1, off
-	Progress, Off
  
    uProgress1:
 	 FileGetSize, fs, % A_WorkingDir . "\TheHell3\TH3.7z"
@@ -251,7 +246,6 @@ Extract(FileName)
  SetWorkingDir % A_WorkingDir . "\TheHell3"
  GuiControl,, TopText,Please wait while Extraction is in progress
  RunWait %comspec% /c "7za x %FileName% -aoa *.* -r",, HIDE
- Progress, Off
  MsgBox, 4,,Finished!! Create Desktop Shortcut?
     IfMsgBox Yes
       {
@@ -274,14 +268,14 @@ if !FileExist(7za.exe)
 
 CleanUp()
 {
- msg := "Cleanup in progress"
- Progress, 100 M FM10 FS8 WM400 WS400 ,`n,%msg%, Deleteing- 7za.exe, Tahoma
+ GuiControl,, TopText, Cleanup in progress
+ GuiControl,, BottomText, Deleteing- 7za.exe
  FileDelete, 7za.exe
- Progress, 100 M FM10 FS8 WM400 WS400 ,`n,%msg%, Deleteing- TH3.7z, Tahoma
+ GuiControl,, BottomText, Deleteing- TH3.7z
  FileDelete, TH3.7z
- Progress, Off
  SetWorkingDir % A_ScriptDir
- GuiControl,, TopText,(Installation Complete!!)
+ GuiControl,, TopText, 
+ GuiControl,, BottomText, (Installation Complete!!)
 }
 
 Connect(Url, Method, PostData)
@@ -349,13 +343,13 @@ GuiClose:
 ExitApp
 
 MorGuiClose:
-Gui, Mor:Destroy
+ Gui, Mor:Destroy
 Return
 
 DevGuiClose:
-Gui, Dev:Destroy
+ Gui, Dev:Destroy
 Return
 
 BlizzGuiClose:
-Gui, Blizz:Destroy
+ Gui, Blizz:Destroy
 Return
