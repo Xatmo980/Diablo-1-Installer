@@ -1,6 +1,6 @@
 # Diablo-1-Installer
-Quick and easy Gui Application to install various versions of Diablo 1<br>
--Must Pruchase Diablo 1 From-<br>
+Quick and Easy Gui Application to install various versions of Diablo 1<br>
+-Must Purchase Diablo 1 From-<br>
   (https://us.shop.battle.net/en-us/product/diablo)<br>
 or<br>
   (https://www.gog.com/en/game/diablo)<br><br>
