@@ -91,12 +91,12 @@ D1TheHell()
   MsgBox, 4,, Download and Install Diablo 1: The Hell 3?
   IfMsgBox Yes
    {
-    Install7z()
+    Install7z(Dev)
     Sleep, 100
     DL := GetDownloadLink()
     DownloadTheHell(Name := GetFileName(), DL)
-    Extract("TH3.7z")
-    CleanUp()
+    Extract("TH3.7z", Dev)
+    CleanUp(Dev)
    }
  }
 else
@@ -111,7 +111,7 @@ D1devilutionx()
  IfMsgBox Yes
   {
     FileCreateDir, diablo
-    Install7zDevX()
+    Install7z(Dev := "1")
     Sleep, 100
     Path := FindLocation()
     if Path != 0
@@ -124,8 +124,8 @@ D1devilutionx()
     Sleep, 100
     DL := GetDevXDownloadLink()
     DownloadDevX(Name, DL)
-    ExtractDevX("devilutionx-windows-x86_64.zip")
-    CleanUpDevx()
+    Extract(FileName, Dev := "1")
+    CleanUp(Dev := "1")
 
     MsgBox % "Complete"
   }
@@ -318,76 +318,77 @@ GetSizeBytes()
  }
 }
 
-Extract(FileName)
+Extract(FileName, Dev)
 {
- SetWorkingDir % A_WorkingDir . "\TheHell3"
- GuiControl,, TopText,Please wait while Extraction is in progress
- RunWait %comspec% /c "7za x %FileName% -aoa *.* -r",, HIDE
- MsgBox, 4,,Finished!! Create Desktop Shortcut?
-    IfMsgBox Yes
+ if Dev = 1
+ {
+  SetWorkingDir % A_WorkingDir . "\diablo"
+  GuiControl,, TopText,Please wait while Extraction is in progress
+  RunWait %comspec% /c "7za x %FileName% -aoa *.* -r",, HIDE
+  FileMove, % A_WorkingDir . "\devilutionx", % A_WorkingDir
+  FileRemoveDir, % A_WorkingDir . "\devilutionx"
+  MsgBox, 4,,Finished!! Create Desktop Shortcut?
+     IfMsgBox Yes
+       {
+        FileCreateShortcut, %A_WorkingDir%\devilutionx.exe, %A_Desktop%\devilutionx.exe.lnk,,, devilutionx, %A_WorkingDir%\devilutionx.exe
+        Return
+       }
+        else
+           Return
+ }
+ else
+ {
+  SetWorkingDir % A_WorkingDir . "\TheHell3"
+  GuiControl,, TopText,Please wait while Extraction is in progress
+  RunWait %comspec% /c "7za x %FileName% -aoa *.* -r",, HIDE
+  MsgBox, 4,,Finished!! Create Desktop Shortcut?
+     IfMsgBox Yes
+       {
+        FileCreateShortcut, %A_WorkingDir%\TH3.exe, %A_Desktop%\The Hell 3.lnk,,, The Hell 3, %A_WorkingDir%\TH3.exe
+        Return
+       }
+        else
+           Return
+ }
+}
+
+Install7z(Dev)
+{
+ FileInstall, 7za.exe, 7za.exe
+ if Dev = 1
+ {
+  if !FileExist(7za.exe)
+      FileCopy, 7za.exe, diablo\7za.exe
+ }
+else
+ {
+  if !FileExist(7za.exe)
       {
-       FileCreateShortcut, %A_WorkingDir%\TH3.exe, %A_Desktop%\The Hell 3.lnk,,, The Hell 3, %A_WorkingDir%\TH3.exe
-       Return
+       FileCreateDir, TheHell3
+       FileCopy, 7za.exe, TheHell3\7za.exe
       }
-       else
-          Return
+  }
 }
 
-ExtractDevX(FileName)
+CleanUp(Dev)
 {
- SetWorkingDir % A_WorkingDir . "\diablo"
- GuiControl,, TopText,Please wait while Extraction is in progress
- RunWait %comspec% /c "7za x %FileName% -aoa *.* -r",, HIDE
- FileMove, % A_WorkingDir . "\devilutionx", % A_WorkingDir
- FileRemoveDir, % A_WorkingDir . "\devilutionx"
- MsgBox, 4,,Finished!! Create Desktop Shortcut?
-    IfMsgBox Yes
-      {
-       FileCreateShortcut, %A_WorkingDir%\devilutionx.exe, %A_Desktop%\devilutionx.exe.lnk,,, devilutionx, %A_WorkingDir%\devilutionx.exe
-       Return
-      }
-       else
-          Return
-}
-
-Install7z()
-{
-if !FileExist(7za.exe)
-    {
-     FileCreateDir, TheHell3
-     FileInstall, 7za.exe, 7za.exe
-     FileCopy, 7za.exe, TheHell3\7za.exe
-    }
-}
-
-Install7zDevX()
-{
-if !FileExist(7za.exe)
-    {
-     FileInstall, 7za.exe, 7za.exe
-     FileCopy, 7za.exe, diablo\7za.exe
-    }
-}
-
-CleanUp()
-{
+ If Dev = 1
+ {
+  GuiControl,, TopText, Cleanup in progress
+  GuiControl,, BottomText, Deleteing- 7za.exe
+  FileDelete, 7za.exe
+  GuiControl,, BottomText, Deleteing- devilutionx-windows-x86_64.zip
+  FileDelete, devilutionx-windows-x86_64.zip
+  SetWorkingDir % A_ScriptDir
+  GuiControl,, TopText, 
+  GuiControl,, BottomText, (Installation Complete!!)
+  return
+ }
  GuiControl,, TopText, Cleanup in progress
  GuiControl,, BottomText, Deleteing- 7za.exe
  FileDelete, 7za.exe
  GuiControl,, BottomText, Deleteing- TH3.7z
  FileDelete, TH3.7z
- SetWorkingDir % A_ScriptDir
- GuiControl,, TopText, 
- GuiControl,, BottomText, (Installation Complete!!)
-}
-
-CleanUpDevx()
-{
- GuiControl,, TopText, Cleanup in progress
- GuiControl,, BottomText, Deleteing- 7za.exe
- FileDelete, 7za.exe
- GuiControl,, BottomText, Deleteing- devilutionx-windows-x86_64.zip
- FileDelete, devilutionx-windows-x86_64.zip
  SetWorkingDir % A_ScriptDir
  GuiControl,, TopText, 
  GuiControl,, BottomText, (Installation Complete!!)
@@ -446,7 +447,7 @@ return 0
 }
 
 GuiClose:
-ExitApp
+ ExitApp
 
 MorGuiClose:
  Gui, Mor:Destroy
