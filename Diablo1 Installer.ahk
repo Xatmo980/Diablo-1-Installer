@@ -94,7 +94,7 @@ D1TheHell()
     Install7z(Dev)
     Sleep, 100
     DL := GetDownloadLink()
-    DownloadTheHell(Name := GetFileName(), DL)
+    UniversalInstall(Name := GetFileName(), Hell := 1, Dev, DL)
     Extract("TH3.7z", Dev)
     CleanUp(Dev)
    }
@@ -123,7 +123,7 @@ D1devilutionx()
     ExtractEmbeds()
     Sleep, 100
     DL := GetDevXDownloadLink()
-    DownloadDevX(Name, DL)
+    UniversalInstall(Name, Hell, Dev := 1, DL)
     Extract(FileName, Dev := "1")
     CleanUp(Dev := "1")
 
@@ -132,6 +132,55 @@ D1devilutionx()
  }
 else
   MsgBox % "Diablo is not installed on your system. You can Buy it from https://us.shop.battle.net/en-us/product/diablo or https://www.gog.com/en/game/diablo"
+}
+
+UniversalInstall(Name, Hell, Dev, DL)
+{
+ Path := FindLocation()
+ if Path != 0
+ {
+  if Hell = 1
+     FileCopy, %Path%, TheHell3\DIABDAT.MPQ
+  if Dev = 1
+     FileCopy, %Path%, diablo\DIABDAT.MPQ
+ }
+ else
+   {
+    MsgBox % "DIABDAT.MPQ Not found in common install locations!"
+    ExitApp
+   }
+    GuiControl, Show, TopText
+    GuiControl, Show, BottomText
+    GuiControl, Show, DownloadBar
+
+    If Hell = 1
+       totalFileSize := GetSizeBytes()
+    if Dev = 1
+       totalFileSize := GetDevXSize()
+
+    FileSize := Round(totalFileSize/1000000)
+
+       GuiControl,, TopText, Please wait while download is in progress
+       SetTimer, uProgressU, 250
+       if Hell = 1
+          UrlDownloadToFile % DL, % A_WorkingDir . "\TheHell3\TH3.7z"
+       if Dev = 1
+          UrlDownloadToFile % DL, % A_WorkingDir . "\diablo\devilutionx-windows-x86_64.zip"
+       SetTimer, uProgressU, off
+ 
+   uProgressU:
+         if Hell = 1
+	    FileGetSize, fs, % A_WorkingDir . "\TheHell3\TH3.7z"
+         if Dev = 1
+            FileGetSize, fs, % A_WorkingDir . "\diablo\devilutionx-windows-x86_64.zip"
+	 a := Floor(fs/totalFileSize * 100)
+	 b := Floor(fs/totalFileSize * 10000)/100
+	 SetFormat, float, 0.2
+	 b += 0
+         f := Round(fs/1000000)
+         GuiControl,, DownloadBar, %b%
+         GuiControl,, BottomText, %b%`% done (%f% MB of %FileSize% MB)
+         Return
 }
 
 DownloadD1()
@@ -158,74 +207,6 @@ DownloadD1()
     
    uProgress:
 	 FileGetSize, fs, %A_WorkingDir%\diablo\DIABDAT.MPQ
-	 a := Floor(fs/totalFileSize * 100)
-	 b := Floor(fs/totalFileSize * 10000)/100
-	 SetFormat, float, 0.2
-	 b += 0
-         f := Round(fs/1000000)
-         GuiControl,, DownloadBar, %b%
-         GuiControl,, BottomText, %b%`% done (%f% MB of %FileSize% MB)
-         Return
-}
-
-DownloadTheHell(Name, DL)
-{
-   Path := FindLocation()
-   if Path != 0
-     FileCopy, %Path%, TheHell3\DIABDAT.MPQ
-   else
-    {
-     MsgBox % "DIABDAT.MPQ Not found in common install locations!"
-     ExitApp
-    }
-     GuiControl, Show, TopText
-     GuiControl, Show, BottomText
-     GuiControl, Show, DownloadBar
-
-     totalFileSize := GetSizeBytes()
-     FileSize := Round(totalFileSize/1000000)
-
-        GuiControl,, TopText, Please wait while download is in progress
-	SetTimer, uProgress1, 250
-	UrlDownloadToFile % DL, % A_WorkingDir . "\TheHell3\TH3.7z"
-	SetTimer, uProgress1, off
- 
-   uProgress1:
-	 FileGetSize, fs, % A_WorkingDir . "\TheHell3\TH3.7z"
-	 a := Floor(fs/totalFileSize * 100)
-	 b := Floor(fs/totalFileSize * 10000)/100
-	 SetFormat, float, 0.2
-	 b += 0
-         f := Round(fs/1000000)
-         GuiControl,, DownloadBar, %b%
-         GuiControl,, BottomText, %b%`% done (%f% MB of %FileSize% MB)
-         Return
-}
-
-DownloadDevX(Name, DL)
-{
-   Path := FindLocation()
-   if Path != 0
-     FileCopy, %Path%, diablo\DIABDAT.MPQ
-   else
-    {
-     MsgBox % "DIABDAT.MPQ Not found in common install locations!"
-     ExitApp
-    }
-     GuiControl, Show, TopText
-     GuiControl, Show, BottomText
-     GuiControl, Show, DownloadBar
-
-     totalFileSize := GetDevXSize()
-     FileSize := Round(totalFileSize/1000000)
-
-        GuiControl,, TopText, Please wait while download is in progress
-	SetTimer, uProgress2, 250
-	UrlDownloadToFile % DL, % A_WorkingDir . "\diablo\devilutionx-windows-x86_64.zip"
-	SetTimer, uProgress2, off
- 
-   uProgress2:
-	 FileGetSize, fs, % A_WorkingDir . "\diablo\devilutionx-windows-x86_64.zip"
 	 a := Floor(fs/totalFileSize * 100)
 	 b := Floor(fs/totalFileSize * 10000)/100
 	 SetFormat, float, 0.2
