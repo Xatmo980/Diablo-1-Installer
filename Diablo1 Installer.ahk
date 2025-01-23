@@ -8,16 +8,21 @@ Menu, MainTheMenu, Add, &By Devilutionx,Devilution
 Menu, MainTheMenu, Add, &By Blizzard,Bliz
 Gui, Menu, MainTheMenu
 
-IfNotExist, %A_WorkingDir%\Diablo.jpg
-  FileInstall, Diablo.jpg, %A_WorkingDir%\Diablo.jpg, 1
+InstallInterface()
+Gui, Font, s9 , diablo
 Name := GetFileName(), DevxName := GetDevXVersion()
-Gui, Add, Picture, x2 y-51 w290 h410 , Diablo.jpg
-Gui, Add, Button, gD1Classic x72 y109 w140 h30 , Diablo 1: Classic
-Gui, Add, Button, gD1TheHell x72 y149 w140 h30 , The Hell 3: %Name%
-Gui, Add, Button, gD1devilutionx x72 y189 w140 h30 , Devilutionx: %DevxName%
-Gui, Add, Text,cRed vTopText x50 y235 w200 h30 +BackgroundTrans, 
-Gui, Add, Progress, x45 y250 w200 h25 cRed vDownloadBar, 0
-Gui, Add, Text,cBlack vBottomText x60 y255 w200 h30 +BackgroundTrans,
+Name := SubStr(Name, 8, 10)
+Gui, Add, Picture, x2 y-51 w290 h410 , Interface\Diablo.jpg
+Gui, Add, Picture, gD1Classic x72 y109 w160 h30 , Interface\Button.jpg
+Gui, Add, Text, +Center x78 y116 w140 h30 +BackgroundTrans, Diablo 1: Classic
+Gui, Add, Picture, gD1TheHell x72 y149 w160 h30 , Interface\Button.jpg
+Gui, Add, Text, +Center x76 y156 w150 h30 +BackgroundTrans,TheHell 3:%Name%
+Gui, Add, Picture, gD1devilutionx x72 y189 w160 h30 , Interface\Button.jpg
+Gui, Add, Text, +Center x79 y196 w140 h30 +BackgroundTrans, Devilutionx: %DevxName%
+Gui, Add, Text,cRed vTopText x35 y235 w250 h30 +BackgroundTrans, 
+Gui, Add, Progress, x35 y250 w225 h25 cRed vDownloadBar, 0
+Gui, Add, Text,cBlack vBottomText x39 y255 w230 h30 +BackgroundTrans,
+Gui, Font, s6
 Gui, Add, Text,cRed x6 y294 w150 h30 +BackgroundTrans, Installer By Xatmo
 Gui, Show, w298 h306, Diablo 1 Installer
 StartupHideDLBar()
@@ -26,7 +31,7 @@ return
 Mordor()
 {
  Gui, Mor:Add, GroupBox, x2 y-1 w280 h80
- Gui, Mor:Add, Picture, x2 y-30 w299 h250 , Diablo.jpg
+ Gui, Mor:Add, Picture, x2 y-30 w299 h250 , Interface\Diablo.jpg
  Gui, Mor:Add, Link, x30 y19 w240 h20, <a href="https://www.moddb.com/mods/diablo-the-hell-3">https://www.moddb.com/mods/diablo-the-hell-3</a>
  Gui, Mor:Add, Link, x54 y49 w180 h20, <a href="https://discord.gg/9kN7HMPgUY">https://discord.gg/9kN7HMPgUY</a>
  Gui, Mor:Show, w299 h92,By Mordor_XP
@@ -36,7 +41,7 @@ return
 Devilution()
 {
  Gui, Dev:Add, GroupBox, x2 y-1 w280 h80
- Gui, Dev:Add, Picture, x2 y-30 w299 h250 , Diablo.jpg
+ Gui, Dev:Add, Picture, x2 y-30 w299 h250 , Interface\Diablo.jpg
  Gui, Dev:Add, Link, x43 y19 w210 h20, <a href="https://github.com/diasurgical/devilutionX">https://github.com/diasurgical/devilutionX</a>
  Gui, Dev:Add, Link, x54 y49 w190 h20, <a href="https://discord.com/invite/devilutionx">https://discord.com/invite/devilutionx</a>
  Gui, Dev:Show, w299 h92,by Devilutionx
@@ -46,7 +51,7 @@ return
 Bliz()
 {
  Gui, Blizz:Add, GroupBox, x2 y-1 w280 h80
- Gui, Blizz:Add, Picture, x2 y-30 w299 h250 , Diablo.jpg
+ Gui, Blizz:Add, Picture, x2 y-30 w299 h250 , Interface\Diablo.jpg
  Gui, Blizz:Add, Link, x39 y19 w230 h20, <a href="https://us.shop.battle.net/en-us/product/diablo">https://us.shop.battle.net/en-us/product/diablo</a>
  Gui, Blizz:Add, Link, x61 y49 w160 h20, <a href="https://www.blizzard.com/en-us">https://www.blizzard.com/en-us</a>
  Gui, Blizz:Show, w299 h92,by Blizzard Entertainment
@@ -95,7 +100,7 @@ D1TheHell()
     Sleep, 100
     DL := GetDownloadLink()
     UniversalInstall(Name := GetFileName(), Hell := 1, Dev, DL)
-    Extract("TH3.7z", Dev)
+    UniveralExtract("TH3.7z", Hell := 1, Dev)
     CleanUp(Dev)
    }
  }
@@ -124,7 +129,7 @@ D1devilutionx()
     Sleep, 100
     DL := GetDevXDownloadLink()
     UniversalInstall(Name, Hell, Dev := 1, DL)
-    Extract(FileName, Dev := "1")
+    UniveralExtract(FileName, Hell, Dev := 1)
     CleanUp(Dev := "1")
 
     MsgBox % "Complete"
@@ -160,7 +165,9 @@ UniversalInstall(Name, Hell, Dev, DL)
 
     FileSize := Round(totalFileSize/1000000)
 
-       GuiControl,, TopText, Please wait while download is in progress
+       Gui, Font, cRed s8
+       GuiControl, Font, TopText
+       GuiControl,, TopText, Please wait while downloading
        SetTimer, uProgressU, 250
        if Hell = 1
           UrlDownloadToFile % DL, % A_WorkingDir . "\TheHell3\TH3.7z"
@@ -178,6 +185,8 @@ UniversalInstall(Name, Hell, Dev, DL)
 	 SetFormat, float, 0.2
 	 b += 0
          f := Round(fs/1000000)
+         Gui, Font, cBlack s8
+         GuiControl, Font, BottomText
          GuiControl,, DownloadBar, %b%
          GuiControl,, BottomText, %b%`% done (%f% MB of %FileSize% MB)
          Return
@@ -299,38 +308,32 @@ GetSizeBytes()
  }
 }
 
-Extract(FileName, Dev)
+UniveralExtract(FileName, Hell, Dev)
 {
- if Dev = 1
- {
-  SetWorkingDir % A_WorkingDir . "\diablo"
-  GuiControl,, TopText,Please wait while Extraction is in progress
+ If Hell = 1
+    SetWorkingDir % A_WorkingDir . "\TheHell3"
+ If Dev = 1
+    SetWorkingDir % A_WorkingDir . "\diablo"
+  GuiControl,, TopText,Please wait while Extracting
   RunWait %comspec% /c "7za x %FileName% -aoa *.* -r",, HIDE
-  FileMove, % A_WorkingDir . "\devilutionx", % A_WorkingDir
-  FileRemoveDir, % A_WorkingDir . "\devilutionx"
+
+  If Dev = 1
+    {
+     FileMove, % A_WorkingDir . "\devilutionx", % A_WorkingDir
+     FileRemoveDir, % A_WorkingDir . "\devilutionx"
+    }
+
   MsgBox, 4,,Finished!! Create Desktop Shortcut?
      IfMsgBox Yes
        {
-        FileCreateShortcut, %A_WorkingDir%\devilutionx.exe, %A_Desktop%\devilutionx.exe.lnk,,, devilutionx, %A_WorkingDir%\devilutionx.exe
+        If Hell = 1
+           FileCreateShortcut, %A_WorkingDir%\TH3.exe, %A_Desktop%\The Hell 3.lnk,,, The Hell 3, %A_WorkingDir%\TH3.exe
+        If Dev = 1
+           FileCreateShortcut, %A_WorkingDir%\devilutionx.exe, %A_Desktop%\devilutionx.exe.lnk,,, devilutionx, %A_WorkingDir%\devilutionx.exe
         Return
        }
         else
            Return
- }
- else
- {
-  SetWorkingDir % A_WorkingDir . "\TheHell3"
-  GuiControl,, TopText,Please wait while Extraction is in progress
-  RunWait %comspec% /c "7za x %FileName% -aoa *.* -r",, HIDE
-  MsgBox, 4,,Finished!! Create Desktop Shortcut?
-     IfMsgBox Yes
-       {
-        FileCreateShortcut, %A_WorkingDir%\TH3.exe, %A_Desktop%\The Hell 3.lnk,,, The Hell 3, %A_WorkingDir%\TH3.exe
-        Return
-       }
-        else
-           Return
- }
 }
 
 Install7z(Dev)
@@ -362,7 +365,7 @@ CleanUp(Dev)
   FileDelete, devilutionx-windows-x86_64.zip
   SetWorkingDir % A_ScriptDir
   GuiControl,, TopText, 
-  GuiControl,, BottomText, (Installation Complete!!)
+  GuiControl,, BottomText, (Installation - Complete!!!)
   return
  }
  GuiControl,, TopText, Cleanup in progress
@@ -372,7 +375,7 @@ CleanUp(Dev)
  FileDelete, TH3.7z
  SetWorkingDir % A_ScriptDir
  GuiControl,, TopText, 
- GuiControl,, BottomText, (Installation Complete!!)
+ GuiControl,, BottomText, (Installation - Complete!!!)
 }
 
 Connect(Url, Method, PostData)
@@ -411,6 +414,18 @@ IfExist, C:\Program Files (x86)\Diablo
   return 1
 
 return 0
+}
+
+InstallInterface()
+{
+ FileCreateDir, Interface
+ IfNotExist, %A_WorkingDir%\Interface\diablo.ttf
+  FileInstall, Interface\diablo.ttf, %A_WorkingDir%\Interface\diablo.ttf, 1
+ IfNotExist, %A_WorkingDir%\Interface\Diablo.jpg
+  FileInstall, Interface\Diablo.jpg, %A_WorkingDir%\Interface\Diablo.jpg, 1
+ IfNotExist, %A_WorkingDir%\Interface\Button.jpg
+  FileInstall, Interface\Button.jpg, %A_WorkingDir%\Interface\Button.jpg, 1
+ DllCall("AddFontResourceEx", "Str", "Interface\diablo.ttf", "UInt", 0x10, "Ptr", 0)
 }
 
 FindLocation()
