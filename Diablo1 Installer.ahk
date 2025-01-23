@@ -3,10 +3,11 @@
 SetBatchLines,-1
 SetWinDelay,0
 
-Global M1,M2,N1,N2,B1,B2
-Menu, MainTheMenu, Add, &By Mordor_XP,Mordor
+Global M1,M2,N1,N2,B1,B2,O1,O2
+Menu, MainTheMenu, Add, &By Mordor,Mordor
 Menu, MainTheMenu, Add, &By Devilutionx,Devilution
-Menu, MainTheMenu, Add, &By Blizzard,Bliz
+Menu, MainTheMenu, Add, &By Noktis,Nok
+Menu, MainTheMenu, Add, &By Blizz,Bliz
 Gui, Menu, MainTheMenu
 
 InstallInterface()
@@ -14,8 +15,8 @@ Gui, Font, s9 , diablo
 Name := GetFileName(), DevxName := GetDevXVersion()
 Name := SubStr(Name, 8, 10)
 Gui, Add, Picture, x2 y-51 w290 h410 , Interface\Diablo.jpg
-Gui, Add, Picture, gD1Classic x72 y109 w160 h30 , Interface\Button.jpg
-Gui, Add, Text, +Center x78 y116 w140 h30 +BackgroundTrans, Diablo 1: Classic
+Gui, Add, Picture, gBelzebub x72 y109 w160 h30 , Interface\Button.jpg
+Gui, Add, Text, +Center x78 y116 w140 h30 +BackgroundTrans, Diablo 1: Belzebub
 Gui, Add, Picture, gD1TheHell x72 y149 w160 h30 , Interface\Button.jpg
 Gui, Add, Text, +Center x76 y156 w150 h30 +BackgroundTrans,TheHell 3:%Name%
 Gui, Add, Picture, gD1devilutionx x72 y189 w160 h30 , Interface\Button.jpg
@@ -25,7 +26,7 @@ Gui, Add, Progress, x35 y250 w225 h25 cRed vDownloadBar, 0
 Gui, Add, Text,cBlack vBottomText x39 y255 w230 h30 +BackgroundTrans,
 Gui, Font, s6
 Gui, Add, Text,cRed x6 y294 w150 h30 +BackgroundTrans, Installer By Xatmo
-Gui, Show, w298 h306, Diablo 1 Installer
+Gui, Show, w298 h306, Diablo 1 Mod Installer
 StartupHideDLBar()
 return
 
@@ -95,6 +96,28 @@ BlizzSite()
  Run, https://www.blizzard.com/en-us
 }
 
+Nok()
+{
+ Gui, No:Font, bold 
+ Gui, No:Add, Picture, x2 y-30 w299 h250 , Interface\Diablo.jpg
+ Gui, No:Add, Picture, x50 y9 w210 h35, Interface\Button.jpg
+ Gui, No:Add, Text, gNikSite vO1 +BackgroundTrans x63 y19 w270 h20, https://mod.diablo.noktis.pl
+ Gui, No:Add, Picture, x50 y48 w210 h35, Interface\Button.jpg
+ Gui, No:Add, Text, gNikDis vO2 +BackgroundTrans x63 y58 w190 h20, https://discord.com/invite/gbFURCHk
+ Gui, No:Show, w299 h92,by Noktis
+return
+}
+
+NikSite()
+{
+ Run, https://mod.diablo.noktis.pl
+}
+
+NikDis()
+{
+ Run, https://discord.com/invite/gbFURCHk
+}
+
 StartupHideDLBar()
 {
  GuiControl, Hide, TopText
@@ -102,22 +125,27 @@ StartupHideDLBar()
  GuiControl, Hide, DownloadBar
 }
 
-D1Classic()
+Belzebub()
 {
  If CheckInstall()
  {
-  MsgBox, 4,, Download and Install Diablo 1?
+  MsgBox, 4,, Download and Install Diablo 1: Belzebub?
   IfMsgBox Yes
    {
-    FileCreateDir, diablo
-    Sleep, 100
-    ExtractEmbeds()
+    FileCreateDir, Belzebub
     Sleep, 100
     Path := FindLocation()
     if Path != 0
-      FileCopy, %Path%, diablo\DIABDAT.MPQ
-    else
-      MsgBox % "Diablo is not installed on your system. You can Buy it from https://us.shop.battle.net/en-us/product/diablo or https://www.gog.com/en/game/diablo"
+    {
+      FileCopy, %Path%, Belzebub\DIABDAT.MPQ
+      Install7z(Dev, hell, Bel := 1)
+      DL := "http://www.xatmo.us/Belzebub/Release1045.zip"
+      UniversalInstall(Name, Hell, Dev, Bel := 1, DL)
+      UniveralExtract("Release1045.zip", Hell, Dev, Bel := 1)
+      CleanUpAll(Dev, Hell, Bel := 1)
+    }
+      else
+        MsgBox % "Diablo is not installed on your system. You can Buy it from https://us.shop.battle.net/en-us/product/diablo or https://www.gog.com/en/game/diablo"
 
     MsgBox % "Complete"
    }
@@ -133,12 +161,12 @@ D1TheHell()
   MsgBox, 4,, Download and Install Diablo 1: The Hell 3?
   IfMsgBox Yes
    {
-    Install7z(Dev, hell := 1)
+    Install7z(Dev, hell := 1, Bel)
     Sleep, 100
     DL := GetDownloadLink()
-    UniversalInstall(Name := GetFileName(), Hell := 1, Dev, DL)
-    UniveralExtract("TH3.7z", Hell := 1, Dev)
-    CleanUpAll(Dev, Hell := 1)
+    UniversalInstall(Name := GetFileName(), Hell := 1, Dev, Bel, DL)
+    UniveralExtract("TH3.7z", Hell := 1, Dev, Bel)
+    CleanUpAll(Dev, Hell := 1, Bel)
    }
  }
 else
@@ -153,7 +181,7 @@ D1devilutionx()
  IfMsgBox Yes
   {
     FileCreateDir, diablo
-    Install7z(Dev := 1, hell)
+    Install7z(Dev := 1, hell, Bel)
     Sleep, 100
     Path := FindLocation()
     if Path != 0
@@ -165,9 +193,9 @@ D1devilutionx()
     ExtractEmbeds()
     Sleep, 100
     DL := GetDevXDownloadLink()
-    UniversalInstall(Name, Hell, Dev := 1, DL)
-    UniveralExtract(FileName, Hell, Dev := 1)
-    CleanUpAll(Dev := 1, Hell)
+    UniversalInstall(Name, Hell, Dev := 1, Bel, DL)
+    UniveralExtract(FileName, Hell, Dev := 1, Bel)
+    CleanUpAll(Dev := 1, Hell, Bel)
 
     MsgBox % "Complete"
   }
@@ -176,7 +204,7 @@ else
   MsgBox % "Diablo is not installed on your system. You can Buy it from https://us.shop.battle.net/en-us/product/diablo or https://www.gog.com/en/game/diablo"
 }
 
-UniversalInstall(Name, Hell, Dev, DL)
+UniversalInstall(Name, Hell, Dev, Bel, DL)
 {
  Path := FindLocation()
  if Path != 0
@@ -185,6 +213,8 @@ UniversalInstall(Name, Hell, Dev, DL)
      FileCopy, %Path%, TheHell3\DIABDAT.MPQ
   if Dev = 1
      FileCopy, %Path%, diablo\DIABDAT.MPQ
+  if Bel = 1 
+     FileCopy, %Path%, Belzebub\DIABDAT.MPQ
  }
  else
    {
@@ -199,6 +229,8 @@ UniversalInstall(Name, Hell, Dev, DL)
        totalFileSize := GetSizeBytes()
     if Dev = 1
        totalFileSize := GetDevXSize()
+    if Bel = 1
+       totalFileSize := 33776115
 
     FileSize := Round(totalFileSize/1000000)
 
@@ -210,6 +242,8 @@ UniversalInstall(Name, Hell, Dev, DL)
           UrlDownloadToFile % DL, % A_WorkingDir . "\TheHell3\TH3.7z"
        if Dev = 1
           UrlDownloadToFile % DL, % A_WorkingDir . "\diablo\devilutionx-windows-x86_64.zip"
+       if Bel = 1
+          UrlDownloadToFile % DL, % A_WorkingDir . "\Belzebub\Release1045.zip"
        SetTimer, uProgressU, off
  
    uProgressU:
@@ -217,6 +251,8 @@ UniversalInstall(Name, Hell, Dev, DL)
 	    FileGetSize, fs, % A_WorkingDir . "\TheHell3\TH3.7z"
          if Dev = 1
             FileGetSize, fs, % A_WorkingDir . "\diablo\devilutionx-windows-x86_64.zip"
+         if Bel = 1
+            FileGetSize, fs, % A_WorkingDir . "\Belzebub\Release1045.zip"
 	 a := Floor(fs/totalFileSize * 100)
 	 b := Floor(fs/totalFileSize * 10000)/100
 	 SetFormat, float, 0.2
@@ -224,40 +260,6 @@ UniversalInstall(Name, Hell, Dev, DL)
          f := Round(fs/1000000)
          Gui, Font, cBlack s8
          GuiControl, Font, BottomText
-         GuiControl,, DownloadBar, %b%
-         GuiControl,, BottomText, %b%`% done (%f% MB of %FileSize% MB)
-         Return
-}
-
-DownloadD1()
-{
-  GuiControl, Show, TopText
-  GuiControl, Show, BottomText
-  GuiControl, Show, DownloadBar
-
-  totalFileSize := 517501282
-  FileSize := Round(totalFileSize/1000000)
-
-        GuiControl,, TopText, Please wait while download is in progress
-	SetTimer, uProgress, 250
-	UrlDownloadToFile % "http://www.xatmo.us/diablompq/DIABDAT.MPQ", % A_WorkingDir . "\diablo\DIABDAT.MPQ"
-	SetTimer, uProgress, off
-         MsgBox, 4,,Finished!! Create Desktop Shortcut?
-            IfMsgBox Yes
-             {
-              FileCreateShortcut, %A_WorkingDir%\diablo\Diablo.exe, %A_Desktop%\Diablo 1.lnk,,, Diablo 1, %A_WorkingDir%\diablo\Diablo.exe
-              Return
-             }
-            else
-               Return
-    
-   uProgress:
-	 FileGetSize, fs, %A_WorkingDir%\diablo\DIABDAT.MPQ
-	 a := Floor(fs/totalFileSize * 100)
-	 b := Floor(fs/totalFileSize * 10000)/100
-	 SetFormat, float, 0.2
-	 b += 0
-         f := Round(fs/1000000)
          GuiControl,, DownloadBar, %b%
          GuiControl,, BottomText, %b%`% done (%f% MB of %FileSize% MB)
          Return
@@ -345,12 +347,14 @@ GetSizeBytes()
  }
 }
 
-UniveralExtract(FileName, Hell, Dev)
+UniveralExtract(FileName, Hell, Dev, Bel)
 {
  If Hell = 1
     SetWorkingDir % A_WorkingDir . "\TheHell3"
  If Dev = 1
     SetWorkingDir % A_WorkingDir . "\diablo"
+  If Bel = 1
+    SetWorkingDir % A_WorkingDir . "\Belzebub"
   GuiControl,, TopText,Please wait while Extracting
   RunWait %comspec% /c "7za x %FileName% -aoa *.* -r",, HIDE
 
@@ -367,13 +371,15 @@ UniveralExtract(FileName, Hell, Dev)
            FileCreateShortcut, %A_WorkingDir%\TH3.exe, %A_Desktop%\The Hell 3.lnk,,, The Hell 3, %A_WorkingDir%\TH3.exe
         If Dev = 1
            FileCreateShortcut, %A_WorkingDir%\devilutionx.exe, %A_Desktop%\devilutionx.exe.lnk,,, devilutionx, %A_WorkingDir%\devilutionx.exe
+        If Bel = 1
+           FileCreateShortcut, %A_WorkingDir%\Belzebub.exe, %A_Desktop%\Belzebub.exe.lnk,,, Belzebub, %A_WorkingDir%\Belzebub.exe
         Return
        }
         else
            Return
 }
 
-Install7z(Dev, hell)
+Install7z(Dev, hell, Bel)
 {
  if !FileExist(7za.exe)
     FileInstall, 7za.exe, 7za.exe
@@ -384,9 +390,13 @@ Install7z(Dev, hell)
     FileCreateDir, TheHell3
     FileCopy, 7za.exe, TheHell3\7za.exe
   }
+ if Bel = 1
+  {
+   FileCopy, 7za.exe, Belzebub\7za.exe
+  }
 }
 
-CleanUpAll(Dev, Hell)
+CleanUpAll(Dev, Hell, Bel)
 {
   GuiControl,, TopText, Cleanup in progress
   GuiControl,, BottomText, Deleteing- 7za.exe
@@ -400,6 +410,11 @@ CleanUpAll(Dev, Hell)
     {
      GuiControl,, BottomText, Deleteing- TH3.7z
      FileDelete, TH3.7z
+    }
+  if Bel = 1
+    {
+     GuiControl,, BottomText, Deleteing- Release1045.zip
+     FileDelete, Release1045.zip
     }
   SetWorkingDir % A_ScriptDir
   GuiControl,, TopText, 
