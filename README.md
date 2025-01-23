@@ -8,6 +8,8 @@ In Order for this to work<br><br>
 
 ![alt text](https://github.com//Xatmo980/Diablo-1-Installer/blob/main/Installer.jpg?raw=true)<br><br>
 
+-Installs The Belzebub for Diablo 1-<br>
+  (https://mod.diablo.noktis.pl/)<br>
 -Installs The Hell 3 Mod for Diablo 1-<br>
   (https://www.moddb.com/mods/diablo-the-hell-3)<br>
 -Installs devilutionX for Diablo 1-<br>
