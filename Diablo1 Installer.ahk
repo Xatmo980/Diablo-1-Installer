@@ -496,6 +496,10 @@ DevGuiClose:
  Gui, Dev:Destroy
 Return
 
+NoGuiClose:
+ Gui, No:Destroy
+Return
+
 BlizzGuiClose:
  Gui, Blizz:Destroy
 Return
