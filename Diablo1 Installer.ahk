@@ -3,6 +3,7 @@
 SetBatchLines,-1
 SetWinDelay,0
 
+Global M1,M2,N1,N2,B1,B2
 Menu, MainTheMenu, Add, &By Mordor_XP,Mordor
 Menu, MainTheMenu, Add, &By Devilutionx,Devilution
 Menu, MainTheMenu, Add, &By Blizzard,Bliz
@@ -30,32 +31,68 @@ return
 
 Mordor()
 {
- Gui, Mor:Add, GroupBox, x2 y-1 w280 h80
+ Gui, Mor:Font, bold 
  Gui, Mor:Add, Picture, x2 y-30 w299 h250 , Interface\Diablo.jpg
- Gui, Mor:Add, Link, x30 y19 w240 h20, <a href="https://www.moddb.com/mods/diablo-the-hell-3">https://www.moddb.com/mods/diablo-the-hell-3</a>
- Gui, Mor:Add, Link, x54 y49 w180 h20, <a href="https://discord.gg/9kN7HMPgUY">https://discord.gg/9kN7HMPgUY</a>
+ Gui, Mor:Add, Picture, x18 y9 w250 h35, Interface\Button.jpg
+ Gui, Mor:Add, Text, gModDB vM1 +BackgroundTrans x35 y19 w280 h20,www.moddb.com/mods/diablo-the-hell
+ Gui, Mor:Add, Picture, x44 y48 w190 h35, Interface\Button.jpg
+ Gui, Mor:Add, Text, gHellDis vM2 +BackgroundTrans x70 y58 w190 h20,discord.gg/9kN7HMPgUY
  Gui, Mor:Show, w299 h92,By Mordor_XP
 return
 }
 
+ModDB()
+{
+ Run, https://www.moddb.com/mods/diablo-the-hell-3
+}
+
+HellDis()
+{
+ Run, https://discord.gg/9kN7HMPgUY
+}
+
 Devilution()
 {
- Gui, Dev:Add, GroupBox, x2 y-1 w280 h80
+ Gui, Dev:Font, bold 
  Gui, Dev:Add, Picture, x2 y-30 w299 h250 , Interface\Diablo.jpg
- Gui, Dev:Add, Link, x43 y19 w210 h20, <a href="https://github.com/diasurgical/devilutionX">https://github.com/diasurgical/devilutionX</a>
- Gui, Dev:Add, Link, x54 y49 w190 h20, <a href="https://discord.com/invite/devilutionx">https://discord.com/invite/devilutionx</a>
+ Gui, Dev:Add, Picture, x33 y9 w230 h35, Interface\Button.jpg
+ Gui, Dev:Add, Text, gDevGit vN1 +BackgroundTrans x48 y19 w240 h20, github.com/diasurgical/devilutionX
+ Gui, Dev:Add, Picture, x33 y48 w230 h35, Interface\Button.jpg
+ Gui, Dev:Add, Text, gDevDis vN2 +BackgroundTrans x65 y58 w220 h20,discord.com/invite/devilutionx
  Gui, Dev:Show, w299 h92,by Devilutionx
 return
 }
 
+DevGit()
+{
+ Run, https://github.com/diasurgical/devilutionX
+}
+
+DevDis()
+{
+ Run, https://discord.com/invite/devilutionx
+}
+
 Bliz()
 {
- Gui, Blizz:Add, GroupBox, x2 y-1 w280 h80
+ Gui, Blizz:Font, bold 
  Gui, Blizz:Add, Picture, x2 y-30 w299 h250 , Interface\Diablo.jpg
- Gui, Blizz:Add, Link, x39 y19 w230 h20, <a href="https://us.shop.battle.net/en-us/product/diablo">https://us.shop.battle.net/en-us/product/diablo</a>
- Gui, Blizz:Add, Link, x61 y49 w160 h20, <a href="https://www.blizzard.com/en-us">https://www.blizzard.com/en-us</a>
+ Gui, Blizz:Add, Picture, x30 y9 w260 h35, Interface\Button.jpg
+ Gui, Blizz:Add, Text, gBuyD1 vB1 +BackgroundTrans x45 y19 w270 h20, us.shop.battle.net/en-us/product/diablo
+ Gui, Blizz:Add, Picture, x57 y48 w200 h35, Interface\Button.jpg
+ Gui, Blizz:Add, Text, gBlizzSite vB2 +BackgroundTrans x90 y58 w190 h20, www.blizzard.com/en-us
  Gui, Blizz:Show, w299 h92,by Blizzard Entertainment
 return
+}
+
+BuyD1()
+{
+ Run, https://us.shop.battle.net/en-us/product/diablo
+}
+
+BlizzSite()
+{
+ Run, https://www.blizzard.com/en-us
 }
 
 StartupHideDLBar()
@@ -96,12 +133,12 @@ D1TheHell()
   MsgBox, 4,, Download and Install Diablo 1: The Hell 3?
   IfMsgBox Yes
    {
-    Install7z(Dev)
+    Install7z(Dev, hell := 1)
     Sleep, 100
     DL := GetDownloadLink()
     UniversalInstall(Name := GetFileName(), Hell := 1, Dev, DL)
     UniveralExtract("TH3.7z", Hell := 1, Dev)
-    CleanUp(Dev)
+    CleanUpAll(Dev, Hell := 1)
    }
  }
 else
@@ -116,7 +153,7 @@ D1devilutionx()
  IfMsgBox Yes
   {
     FileCreateDir, diablo
-    Install7z(Dev := "1")
+    Install7z(Dev := 1, hell)
     Sleep, 100
     Path := FindLocation()
     if Path != 0
@@ -130,7 +167,7 @@ D1devilutionx()
     DL := GetDevXDownloadLink()
     UniversalInstall(Name, Hell, Dev := 1, DL)
     UniveralExtract(FileName, Hell, Dev := 1)
-    CleanUp(Dev := "1")
+    CleanUpAll(Dev := 1, Hell)
 
     MsgBox % "Complete"
   }
@@ -336,46 +373,37 @@ UniveralExtract(FileName, Hell, Dev)
            Return
 }
 
-Install7z(Dev)
+Install7z(Dev, hell)
 {
- FileInstall, 7za.exe, 7za.exe
+ if !FileExist(7za.exe)
+    FileInstall, 7za.exe, 7za.exe
  if Dev = 1
- {
-  if !FileExist(7za.exe)
-      FileCopy, 7za.exe, diablo\7za.exe
- }
-else
- {
-  if !FileExist(7za.exe)
-      {
-       FileCreateDir, TheHell3
-       FileCopy, 7za.exe, TheHell3\7za.exe
-      }
+    FileCopy, 7za.exe, diablo\7za.exe
+ if Hell = 1
+  {
+    FileCreateDir, TheHell3
+    FileCopy, 7za.exe, TheHell3\7za.exe
   }
 }
 
-CleanUp(Dev)
+CleanUpAll(Dev, Hell)
 {
- If Dev = 1
- {
   GuiControl,, TopText, Cleanup in progress
   GuiControl,, BottomText, Deleteing- 7za.exe
   FileDelete, 7za.exe
-  GuiControl,, BottomText, Deleteing- devilutionx-windows-x86_64.zip
-  FileDelete, devilutionx-windows-x86_64.zip
+  if Dev = 1
+    {
+     GuiControl,, BottomText, Deleteing- devilutionx-windows-x86_64.zip
+     FileDelete, devilutionx-windows-x86_64.zip
+    }
+  if Hell = 1
+    {
+     GuiControl,, BottomText, Deleteing- TH3.7z
+     FileDelete, TH3.7z
+    }
   SetWorkingDir % A_ScriptDir
   GuiControl,, TopText, 
   GuiControl,, BottomText, (Installation - Complete!!!)
-  return
- }
- GuiControl,, TopText, Cleanup in progress
- GuiControl,, BottomText, Deleteing- 7za.exe
- FileDelete, 7za.exe
- GuiControl,, BottomText, Deleteing- TH3.7z
- FileDelete, TH3.7z
- SetWorkingDir % A_ScriptDir
- GuiControl,, TopText, 
- GuiControl,, BottomText, (Installation - Complete!!!)
 }
 
 Connect(Url, Method, PostData)
